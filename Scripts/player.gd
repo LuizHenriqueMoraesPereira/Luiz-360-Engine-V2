@@ -80,17 +80,22 @@ func _physics_process(delta):
 	
 	_update(delta_time, 16)
 	
-	if x_position <= 16.0 and x_speed < 0.0:
-		x_position = 16.0
+	if x_position <= $"../Camera2D".min_x + 16.0 and x_speed < 0.0:
+		x_position = $"../Camera2D".min_x + 16.0
 		if ground: ground_speed = 0.0
 		else: x_speed = 0.0
+	
+	if x_position >= $"../Camera2D".max_x - 16.0 and x_speed > 0.0:
+		x_position = $"../Camera2D".max_x - 16.0
+		if ground: ground_speed = 0.0
+		else: x_speed = 0.0
+	
+	_actions()
 	
 	if not ground:
 		y_speed += gravity_force * delta_time
 		if y_speed > 16.0:
 			y_speed = 16.0
-	
-	_actions()
 	
 	if input_horizontal != 0:
 		animation_direction = input_horizontal
@@ -136,7 +141,7 @@ func _physics_process(delta):
 		animation_angle = 0.0
 	
 	global_position = Vector2(round(x_position), round(y_position))
-	global_rotation = deg2rad(360.0 - round(animation_angle))
+	global_rotation = deg2rad(360.0 - round(animation_angle / 45.0) * 45.0)
 	
 	if ground:
 		if control_lock <= 0.0:

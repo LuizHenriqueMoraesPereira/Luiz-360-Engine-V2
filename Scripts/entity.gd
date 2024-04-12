@@ -70,7 +70,7 @@ func _update(delta : float, loops : int = 2):
 								ground_speed = y_speed * 0.5 * -sign(sin(deg2rad(ground_angle)))
 						ground = true
 					else:
-						if vertical_sensor.normal.y < 0.75 and y_speed < -1.0:
+						if vertical_sensor.normal.y < 0.9 and y_speed < -1.75:
 							ground_angle = fmod(720.0 - rad2deg(atan2(vertical_sensor.normal.x, -vertical_sensor.normal.y)), 360.0)
 							ground_speed = y_speed * -sign(sin(deg2rad(ground_angle)))
 							ground = true

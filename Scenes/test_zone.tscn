@@ -13,8 +13,8 @@
 
 [node name="Scene" type="Node"]
 script = ExtResource( 7 )
-scene_width = 10240
-scene_height = 4096
+scene_width = 2176
+scene_height = 608
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 32, 322 )
@@ -68,6 +68,18 @@ position = Vector2( 1344, 400 )
 
 [node name="Test18" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1408, 400 )
+
+[node name="Test30" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1960, 16 )
+
+[node name="Test31" parent="." instance=ExtResource( 2 )]
+position = Vector2( 2024, 16 )
+
+[node name="Test32" parent="." instance=ExtResource( 2 )]
+position = Vector2( 2088, 16 )
+
+[node name="Test33" parent="." instance=ExtResource( 2 )]
+position = Vector2( 2112, 16 )
 
 [node name="Test4" parent="." instance=ExtResource( 2 )]
 position = Vector2( 224, 336 )

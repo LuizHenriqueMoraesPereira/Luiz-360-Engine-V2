@@ -23,6 +23,9 @@ onready var scene : Node = $".."
 onready var target : Node2D = $"../Player"
 
 func _ready():
+	camera_x = target.global_position.x
+	camera_y = target.global_position.y
+	
 	max_x = scene.scene_width
 	max_y = scene.scene_height
 
@@ -55,4 +58,4 @@ func _physics_process(delta):
 		ground_old = target.ground
 	
 	global_position.x = clamp(camera_x, window_half_width, scene.scene_width - window_half_width)
-	global_position.y = clamp(camera_y, window_half_height, scene.scene_width - window_half_height)
+	global_position.y = clamp(camera_y, window_half_height, scene.scene_height - window_half_height)
