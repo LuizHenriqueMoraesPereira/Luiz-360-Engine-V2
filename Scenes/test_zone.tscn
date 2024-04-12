@@ -1,0 +1,131 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Objects/player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Test Zone/Objects/test_0.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Test Zone/Objects/test_1.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Test Zone/Objects/test_2.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Test Zone/Objects/test_4.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Test Zone/Objects/test_3.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scripts/scene.gd" type="Script" id=7]
+[ext_resource path="res://Scripts/classic_camera.gd" type="Script" id=8]
+[ext_resource path="res://Test Zone/Objects/test_5.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Objects/layer_switcher.tscn" type="PackedScene" id=10]
+
+[node name="Scene" type="Node"]
+script = ExtResource( 7 )
+scene_width = 10240
+scene_height = 4096
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 32, 322 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 160, 120 )
+current = true
+script = ExtResource( 8 )
+
+[node name="Test" parent="." instance=ExtResource( 2 )]
+position = Vector2( 352, 400 )
+
+[node name="Test11" parent="." instance=ExtResource( 2 )]
+position = Vector2( 944, 400 )
+
+[node name="Test12" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1008, 400 )
+
+[node name="Test13" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1072, 400 )
+
+[node name="Test14" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1136, 400 )
+
+[node name="Test23" parent="." instance=ExtResource( 2 )]
+position = Vector2( 976, 81 )
+
+[node name="Test24" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1040, 81 )
+
+[node name="Test25" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1104, 81 )
+
+[node name="Test26" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1168, 81 )
+
+[node name="Test27" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1181, 81 )
+
+[node name="Test19" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1184, 400 )
+
+[node name="Test15" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1216, 400 )
+
+[node name="Test16" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1280, 400 )
+
+[node name="Test17" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1344, 400 )
+
+[node name="Test18" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1408, 400 )
+
+[node name="Test4" parent="." instance=ExtResource( 2 )]
+position = Vector2( 224, 336 )
+
+[node name="Test5" parent="." instance=ExtResource( 2 )]
+position = Vector2( 192, 272 )
+
+[node name="Test6" parent="." instance=ExtResource( 2 )]
+position = Vector2( 160, 336 )
+
+[node name="Test7" parent="." instance=ExtResource( 2 )]
+position = Vector2( 96, 336 )
+
+[node name="Test8" parent="." instance=ExtResource( 2 )]
+position = Vector2( 32, 336 )
+
+[node name="Test21" parent="." instance=ExtResource( 9 )]
+position = Vector2( 976, 145 )
+
+[node name="Test22" parent="." instance=ExtResource( 5 )]
+position = Vector2( 1112, 145 )
+
+[node name="Test9" parent="." instance=ExtResource( 2 )]
+position = Vector2( -32, 336 )
+
+[node name="Test2" parent="." instance=ExtResource( 3 )]
+position = Vector2( 288, 336 )
+
+[node name="Test3" parent="." instance=ExtResource( 4 )]
+position = Vector2( 416, 400 )
+
+[node name="Test28" parent="." instance=ExtResource( 3 )]
+position = Vector2( 1920, 448 )
+rotation = -1.57079
+
+[node name="Test29" parent="." instance=ExtResource( 4 )]
+position = Vector2( 1968, 360 )
+rotation = -1.57079
+
+[node name="Test10" parent="." instance=ExtResource( 4 )]
+position = Vector2( 1472, 400 )
+
+[node name="Test20" parent="." instance=ExtResource( 6 )]
+position = Vector2( 168, 184 )
+
+[node name="Layer Switcher" parent="." instance=ExtResource( 10 )]
+position = Vector2( 944, 272 )
+scale = Vector2( 1, 4 )
+
+[node name="Layer Switcher2" parent="." instance=ExtResource( 10 )]
+position = Vector2( 1280, 272 )
+scale = Vector2( 1, 4 )
+top_left = 1
+bottom_left = 1
+
+[node name="Layer Switcher3" parent="." instance=ExtResource( 10 )]
+position = Vector2( 1112, 208 )
+scale = Vector2( 2, 2 )
+top_left = 1
+bottom_left = 1
+ground_only = true

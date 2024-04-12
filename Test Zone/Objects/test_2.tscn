@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Test Zone/Sprites/test_2.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/entity.gd" type="Script" id=2]
+
+[node name="Test" type="StaticBody2D"]
+script = ExtResource( 2 )
+tags = PoolStringArray( "Solid", "Layer0", "Layer1" )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+centered = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+visible = false
+polygon = PoolVector2Array( 0, 0, 16, 6, 32, 13, 37, 16, 48, 22, 63, 32, 64, 33, 80, 48, 93, 64, 96, 69, 102, 80, 111, 96, 112, 98, 121, 112, 128, 123, 132, 128, 144, 140, 160, 152, 173, 160, 176, 161, 192, 169, 208, 175, 210, 176, 224, 180, 240, 184, 256, 186, 272, 187, 288, 186, 304, 184, 320, 179, 329, 176, 336, 173, 352, 164, 360, 160, 368, 154, 381, 144, 384, 141, 397, 128, 400, 124, 409, 112, 416, 100, 418, 96, 427, 80, 432, 72, 437, 64, 448, 49, 449, 48, 464, 34, 466, 32, 480, 22, 492, 16, 496, 13, 512, 6, 528, 0, 528, 208, 0, 208 )
