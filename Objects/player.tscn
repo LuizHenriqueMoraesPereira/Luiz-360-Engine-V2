@@ -502,10 +502,10 @@ push_radius = 14.0
 wall_shift = 4.0
 
 [node name="Sprite" type="Sprite" parent="."]
-texture = ExtResource( 9 )
+texture = ExtResource( 1 )
 centered = false
 offset = Vector2( -24, -34 )
-hframes = 2
+hframes = 4
 
 [node name="Area2D" type="Area2D" parent="."]
 visible = false
