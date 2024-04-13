@@ -10,12 +10,17 @@ var animation_linked : String = "none"
 var animation_finished : bool = false
 
 onready var sprite : Sprite = $Sprite
+onready var hit_box : Area2D = $Area2D
 onready var animator : AnimationPlayer = $AnimationPlayer
 
 var smooth_angle : float
 var input_horizontal : int
 var control_lock : float
 var action : int
+
+export(bool) var partial_rotation = true
+export(bool) var snapped_rotation = true
+export(float, 1.0, 45.0) var rotation_snap = 45.0
 
 export(float) var acceleration = 0.046875
 export(float) var air_acceleration = 0.09375
@@ -116,10 +121,13 @@ func _physics_process(delta):
 	
 	if ground:
 		if abs(fmod(ground_angle - smooth_angle + 540.0, 360.0) - 180.0) < 60.0:
-			if abs(fmod(0.0 - ground_angle + 540.0, 360.0) - 180.0) >= 40.0:
-				smooth_angle += (fmod(ground_angle - smooth_angle + 540.0, 360.0) - 180.0) * max(0.165, abs(ground_speed / 16.0) * 0.8) * delta_time
+			if partial_rotation:
+				if abs(fmod(0.0 - ground_angle + 540.0, 360.0) - 180.0) >= 40.0:
+					smooth_angle += (fmod(ground_angle - smooth_angle + 540.0, 360.0) - 180.0) * max(0.165, abs(ground_speed / 16.0) * 0.8) * delta_time
+				else:
+					smooth_angle += (fmod(0.0 - smooth_angle + 540.0, 360.0) - 180.0) * max(0.165, abs(ground_speed / 16.0) * 0.8) * delta_time
 			else:
-				smooth_angle += (fmod(0.0 - smooth_angle + 540.0, 360.0) - 180.0) * max(0.165, abs(ground_speed / 16.0) * 0.8) * delta_time
+					smooth_angle += (fmod(ground_angle - smooth_angle + 540.0, 360.0) - 180.0) * max(0.165, abs(ground_speed / 16.0) * 0.8) * delta_time
 			
 			smooth_angle = fmod(720.0 + smooth_angle, 360.0)
 		else:
@@ -141,7 +149,12 @@ func _physics_process(delta):
 		animation_angle = 0.0
 	
 	global_position = Vector2(round(x_position), round(y_position))
-	global_rotation = deg2rad(360.0 - round(animation_angle / 45.0) * 45.0)
+	global_rotation = 0.0
+	if snapped_rotation:
+		sprite.global_rotation = deg2rad(360.0 - round(animation_angle / rotation_snap) * rotation_snap)
+	else:
+		sprite.global_rotation = deg2rad(360.0 - round(animation_angle))
+	hit_box.global_rotation = deg2rad(360.0 - round(ground_angle))
 	
 	if ground:
 		if control_lock <= 0.0:
