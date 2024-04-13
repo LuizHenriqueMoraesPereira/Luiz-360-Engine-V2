@@ -15,8 +15,12 @@ onready var animator : AnimationPlayer = $AnimationPlayer
 
 var smooth_angle : float
 var input_horizontal : int
+var input_vertical : int
 var control_lock : float
 var action : int
+
+var allow_input : bool = true
+var allow_direction : bool = true
 
 export(bool) var partial_rotation = true
 export(bool) var snapped_rotation = true
@@ -39,46 +43,48 @@ func _physics_process(delta):
 	var delta_time : float = float(60.0 * delta)
 	
 	input_horizontal = (1 if Input.is_action_pressed("Right") else 0) - (1 if Input.is_action_pressed("Left") else 0)
+	input_vertical = (1 if Input.is_action_pressed("Down") else 0) - (1 if Input.is_action_pressed("Up") else 0)
 	
-	if ground:
-		ground_speed -= slope_factor * sin(deg2rad(ground_angle)) * delta_time
-	
-	if input_horizontal < 0:
-		if ground and control_lock <= 0.0:
-			if ground_speed > 0.0:
-				ground_speed -= deceleration * delta_time
-				if ground_speed <= 0.0:
-					ground_speed = -deceleration
-			elif ground_speed > -top_speed:
-				ground_speed -= acceleration * delta_time
-				if ground_speed <= -top_speed:
-					ground_speed = -top_speed
-		elif not ground:
-			if x_speed > -top_speed:
-				x_speed -= air_acceleration * delta_time
-				if x_speed <= -top_speed:
-					x_speed = -top_speed
-	
-	if input_horizontal > 0:
-		if ground and control_lock <= 0.0:
-			if ground_speed < 0.0:
-				ground_speed += deceleration * delta_time
-				if ground_speed >= 0.0:
-					ground_speed = deceleration
-			elif ground_speed < top_speed:
-				ground_speed += acceleration * delta_time
-				if ground_speed >= top_speed:
-					ground_speed = top_speed
-		elif not ground:
-			if x_speed < top_speed:
-				x_speed += air_acceleration * delta_time
-				if x_speed >= top_speed:
-					x_speed = top_speed
-	
-	if ground and input_horizontal == 0 and control_lock <= 0.0:
-		ground_speed -= min(abs(ground_speed), friction * delta_time) * sign(ground_speed)
-		if abs(ground_speed) < friction:
-			ground_speed = 0.0
+	if allow_input:
+		if ground:
+			ground_speed -= slope_factor * sin(deg2rad(ground_angle)) * delta_time
+		
+		if input_horizontal < 0:
+			if ground and control_lock <= 0.0:
+				if ground_speed > 0.0:
+					ground_speed -= deceleration * delta_time
+					if ground_speed <= 0.0:
+						ground_speed = -deceleration
+				elif ground_speed > -top_speed:
+					ground_speed -= acceleration * delta_time
+					if ground_speed <= -top_speed:
+						ground_speed = -top_speed
+			elif not ground:
+				if x_speed > -top_speed:
+					x_speed -= air_acceleration * delta_time
+					if x_speed <= -top_speed:
+						x_speed = -top_speed
+		
+		if input_horizontal > 0:
+			if ground and control_lock <= 0.0:
+				if ground_speed < 0.0:
+					ground_speed += deceleration * delta_time
+					if ground_speed >= 0.0:
+						ground_speed = deceleration
+				elif ground_speed < top_speed:
+					ground_speed += acceleration * delta_time
+					if ground_speed >= top_speed:
+						ground_speed = top_speed
+			elif not ground:
+				if x_speed < top_speed:
+					x_speed += air_acceleration * delta_time
+					if x_speed >= top_speed:
+						x_speed = top_speed
+		
+		if ground and input_horizontal == 0 and control_lock <= 0.0:
+			ground_speed -= min(abs(ground_speed), friction * delta_time) * sign(ground_speed)
+			if abs(ground_speed) < friction:
+				ground_speed = 0.0
 	
 	if not ground and y_speed < 0.0 and y_speed > -4.0:
 		x_speed -= ((floor(abs(x_speed / 0.125)) * sign(x_speed)) / 256.0) * delta_time
@@ -95,14 +101,34 @@ func _physics_process(delta):
 		if ground: ground_speed = 0.0
 		else: x_speed = 0.0
 	
-	_actions()
+	match action:
+		0:
+			allow_input = true
+			allow_direction = true
+			_action_common()
+		1:
+			allow_input = true
+			allow_direction = true
+			_action_jump()
+		2:
+			allow_input = false
+			allow_direction = false
+			_action_lookup()
+		3:
+			allow_input = false
+			allow_direction = false
+			_action_crouchdown()
+		4:
+			allow_input = true
+			allow_direction = false
+			_action_skidding()
 	
 	if not ground:
 		y_speed += gravity_force * delta_time
 		if y_speed > 16.0:
 			y_speed = 16.0
 	
-	if input_horizontal != 0:
+	if allow_direction and input_horizontal != 0:
 		animation_direction = input_horizontal
 	
 	sprite.flip_h = animation_direction < 0
@@ -177,11 +203,6 @@ func _physics_process(delta):
 func _on_animation_finished(_anim_name):
 	animation_finished = true
 
-func _actions():
-	match action:
-		0: _action_common()
-		1: _action_jump()
-
 func _action_common() -> void:
 	if ground:
 		if abs(ground_speed) <= 0.0:
@@ -209,8 +230,24 @@ func _action_common() -> void:
 		animation_linked = "none"
 		animator.playback_speed = 1.0 + abs(ground_speed / 2.0)
 	
+	if ground and ground_speed == 0.0 and input_horizontal == 0:
+		if input_vertical < 0:
+			action = 2
+			return
+		
+		if input_vertical > 0:
+			action = 3
+			return
+	
+	if ground and abs(ground_speed) >= 4.0 and (ground_speed > 0.0 and input_horizontal < 0 or ground_speed < 0.0 and input_horizontal > 0) and not (ground_angle >= 45.0 and ground_angle <= 315.0):
+		allow_direction = false
+		animation_direction = input_horizontal
+		action = 4
+		return
+	
 	if ground and Input.is_action_just_pressed("Fire 1"):
 		animation = "jump"
+		animation_linked = "none"
 		x_speed += jump_force * sin(deg2rad(ground_angle))
 		y_speed += jump_force * cos(deg2rad(ground_angle))
 		ground_angle = 0.0
@@ -221,6 +258,7 @@ func _action_common() -> void:
 
 func _action_jump() -> void:
 	animation = "jump"
+	animation_linked = "none"
 	animator.playback_speed = 2.0 + abs(ground_speed / 4.0)
 	
 	if Input.is_action_just_released("Fire 1") and y_speed < jump_release_force:
@@ -228,4 +266,42 @@ func _action_jump() -> void:
 	
 	if ground:
 		action = 0
+		return
+
+func _action_lookup() -> void:
+	animation = "lookup"
+	animation_linked = "none"
+	animator.playback_speed = 1.0
+	
+	if not (ground and ground_speed == 0.0 and input_vertical < 0):
+		action = 0
+		return
+
+func _action_crouchdown() -> void:
+	animation = "crouchdown"
+	animation_linked = "none"
+	animator.playback_speed = 1.0
+	
+	if not (ground and ground_speed == 0.0 and input_vertical > 0):
+		action = 0
+		return
+
+func _action_skidding() -> void:
+	animation = "skidding"
+	animation_linked = "none"
+	animator.playback_speed = 2.0
+	
+	if ground_speed > 0.0 and input_horizontal > 0 or ground_speed < 0.0 and input_horizontal < 0 or abs(ground_speed) < friction or not ground:
+		action = 0
+		return
+	
+	if ground and Input.is_action_just_pressed("Fire 1"):
+		animation = "jump"
+		animation_linked = "none"
+		x_speed += jump_force * sin(deg2rad(ground_angle))
+		y_speed += jump_force * cos(deg2rad(ground_angle))
+		ground_angle = 0.0
+		ground = false
+		control_lock = 0.0
+		action = 1
 		return
