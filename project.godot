@@ -14,6 +14,10 @@ config/name="Luiz's 360° Engine"
 run/main_scene="res://Scenes/test_zone.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Audio="*res://Scripts/audio.gd"
+
 [display]
 
 window/size/width=320

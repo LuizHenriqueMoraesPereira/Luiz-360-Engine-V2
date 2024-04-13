@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/Sound_AquaticShieldGet.wav-fe1866b9f704e972aaa0561ffd18b6c3.sample"
+
+[deps]
+
+source_file="res://Sounds/Sound_AquaticShieldGet.wav"
+dest_files=[ "res://.import/Sound_AquaticShieldGet.wav-fe1866b9f704e972aaa0561ffd18b6c3.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

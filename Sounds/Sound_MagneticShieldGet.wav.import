@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/Sound_MagneticShieldGet.wav-3c849489583a24485029288864a16c3d.sample"
+
+[deps]
+
+source_file="res://Sounds/Sound_MagneticShieldGet.wav"
+dest_files=[ "res://.import/Sound_MagneticShieldGet.wav-3c849489583a24485029288864a16c3d.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

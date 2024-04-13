@@ -16,6 +16,7 @@ onready var animator : AnimationPlayer = $AnimationPlayer
 var smooth_angle : float
 var input_horizontal : int
 var input_vertical : int
+var jump_variable : bool
 var control_lock : float
 var action : int
 
@@ -35,6 +36,14 @@ export(float) var slope_factor = 0.125
 export(float) var gravity_force = 0.21875
 export(float) var jump_force = -6.5
 export(float) var jump_release_force = -4.0
+export(float) var roll_friction = 0.0234375
+export(float) var roll_deceleration = 0.125
+export(float) var roll_slope_up_factor = 0.078125
+export(float) var roll_slope_down_factor = 0.3125
+
+export(AudioStream) var sfx_jump
+export(AudioStream) var sfx_skid
+export(AudioStream) var sfx_roll
 
 func _ready():
 	_start()
@@ -122,6 +131,10 @@ func _physics_process(delta):
 			allow_input = true
 			allow_direction = false
 			_action_skidding()
+		6:
+			allow_input = false
+			allow_direction = false
+			_action_rolling(delta_time)
 	
 	if not ground:
 		y_speed += gravity_force * delta_time
@@ -241,18 +254,26 @@ func _action_common() -> void:
 	
 	if ground and abs(ground_speed) >= 4.0 and (ground_speed > 0.0 and input_horizontal < 0 or ground_speed < 0.0 and input_horizontal > 0) and not (ground_angle >= 45.0 and ground_angle <= 315.0):
 		allow_direction = false
+		Audio._play_sample(sfx_skid)
 		animation_direction = input_horizontal
 		action = 4
+		return
+	
+	if ground and abs(ground_speed) >= 0.5 and input_horizontal == 0 and input_vertical > 0:
+		Audio._play_sample(sfx_roll)
+		action = 6
 		return
 	
 	if ground and Input.is_action_just_pressed("Fire 1"):
 		animation = "jump"
 		animation_linked = "none"
+		Audio._play_sample(sfx_jump)
 		x_speed += jump_force * sin(deg2rad(ground_angle))
 		y_speed += jump_force * cos(deg2rad(ground_angle))
 		ground_angle = 0.0
 		ground = false
 		control_lock = 0.0
+		jump_variable = true
 		action = 1
 		return
 
@@ -261,7 +282,7 @@ func _action_jump() -> void:
 	animation_linked = "none"
 	animator.playback_speed = 2.0 + abs(ground_speed / 4.0)
 	
-	if Input.is_action_just_released("Fire 1") and y_speed < jump_release_force:
+	if jump_variable and Input.is_action_just_released("Fire 1") and y_speed < jump_release_force:
 		y_speed = jump_release_force
 	
 	if ground:
@@ -298,10 +319,61 @@ func _action_skidding() -> void:
 	if ground and Input.is_action_just_pressed("Fire 1"):
 		animation = "jump"
 		animation_linked = "none"
+		Audio._play_sample(sfx_jump)
 		x_speed += jump_force * sin(deg2rad(ground_angle))
 		y_speed += jump_force * cos(deg2rad(ground_angle))
 		ground_angle = 0.0
 		ground = false
 		control_lock = 0.0
+		jump_variable = true
 		action = 1
+		return
+
+func _action_rolling(delta_time : float) -> void:
+	animation = "jump"
+	animation_linked = "none"
+	animator.playback_speed = 2.0 + abs(ground_speed / 4.0)
+	
+	var roll_slope_factor : float = roll_slope_up_factor if (sign(ground_speed) == sign(sin(deg2rad(ground_angle)))) else roll_slope_down_factor
+	ground_speed -= roll_slope_factor * sin(deg2rad(ground_angle)) * delta_time
+	
+	if input_horizontal < 0:
+		if ground_speed > 0.0:
+			ground_speed -= roll_deceleration * delta_time
+			if ground_speed <= 0.0:
+				ground_speed = -roll_deceleration
+		elif ground_speed > -top_speed:
+			ground_speed -= min(abs(ground_speed), roll_friction * delta_time) * sign(ground_speed)
+	
+	if input_horizontal > 0:
+		if ground_speed < 0.0:
+			ground_speed += roll_deceleration * delta_time
+			if ground_speed >= 0.0:
+				ground_speed = roll_deceleration
+		elif ground_speed < top_speed:
+			ground_speed -= min(abs(ground_speed), roll_friction * delta_time) * sign(ground_speed)
+	
+	if input_horizontal == 0:
+		ground_speed -= min(abs(ground_speed), roll_friction * delta_time) * sign(ground_speed)
+	
+	if not ground:
+		action = 1
+		jump_variable = false
+		return
+	
+	if ground and Input.is_action_just_pressed("Fire 1"):
+		animation = "jump"
+		animation_linked = "none"
+		Audio._play_sample(sfx_jump)
+		x_speed += jump_force * sin(deg2rad(ground_angle))
+		y_speed += jump_force * cos(deg2rad(ground_angle))
+		ground_angle = 0.0
+		ground = false
+		control_lock = 0.0
+		jump_variable = true
+		action = 1
+		return
+	
+	if abs(ground_speed) < roll_friction:
+		action = 0
 		return
