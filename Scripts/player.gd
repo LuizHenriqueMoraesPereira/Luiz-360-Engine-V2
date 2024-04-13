@@ -19,6 +19,7 @@ var input_vertical : int
 var jump_variable : bool
 var control_lock : float
 var action : int
+var spindash_rev : float
 
 var allow_input : bool = true
 var allow_direction : bool = true
@@ -44,6 +45,8 @@ export(float) var roll_slope_down_factor = 0.3125
 export(AudioStream) var sfx_jump
 export(AudioStream) var sfx_skid
 export(AudioStream) var sfx_roll
+export(AudioStream) var sfx_charge
+export(AudioStream) var sfx_release
 
 func _ready():
 	_start()
@@ -98,7 +101,9 @@ func _physics_process(delta):
 	if not ground and y_speed < 0.0 and y_speed > -4.0:
 		x_speed -= ((floor(abs(x_speed / 0.125)) * sign(x_speed)) / 256.0) * delta_time
 	
-	_update(delta_time, 16)
+	ground_speed = clamp(ground_speed, -24.0, 24.0)
+	
+	_update(delta_time, 24)
 	
 	if x_position <= $"../Camera2D".min_x + 16.0 and x_speed < 0.0:
 		x_position = $"../Camera2D".min_x + 16.0
@@ -131,6 +136,10 @@ func _physics_process(delta):
 			allow_input = true
 			allow_direction = false
 			_action_skidding()
+		5:
+			allow_input = false
+			allow_direction = false
+			_action_spindash(delta_time)
 		6:
 			allow_input = false
 			allow_direction = false
@@ -306,13 +315,19 @@ func _action_crouchdown() -> void:
 	if not (ground and ground_speed == 0.0 and input_vertical > 0):
 		action = 0
 		return
+	
+	if Input.is_action_just_pressed("Fire 1"):
+		Audio._stop_sample(sfx_charge)
+		Audio._play_sample(sfx_charge)
+		action = 5
+		return
 
 func _action_skidding() -> void:
 	animation = "skidding"
 	animation_linked = "none"
 	animator.playback_speed = 2.0
 	
-	if ground_speed > 0.0 and input_horizontal > 0 or ground_speed < 0.0 and input_horizontal < 0 or abs(ground_speed) < friction or not ground:
+	if ground_speed >= 0.0 and input_horizontal >= 0 or ground_speed <= 0.0 and input_horizontal <= 0 or abs(ground_speed) < friction or not ground:
 		action = 0
 		return
 	
@@ -328,6 +343,26 @@ func _action_skidding() -> void:
 		jump_variable = true
 		action = 1
 		return
+
+func _action_spindash(delta_time : float) -> void:
+	animation = "spindash"
+	animation_linked = "none"
+	animator.playback_speed = 2.0 + (spindash_rev / 4.0)
+	
+	if not input_vertical > 0:
+		Audio._stop_sample(sfx_charge)
+		Audio._play_sample(sfx_release)
+		action = 6
+		ground_speed += (8.0 + (floor(spindash_rev) / 2.0)) * animation_direction
+		spindash_rev = 0.0
+		return
+	
+	if Input.is_action_just_pressed("Fire 1"):
+		spindash_rev += 2.0
+		Audio._stop_sample(sfx_charge)
+		Audio._play_sample(sfx_charge)
+	
+	spindash_rev -= (floor(spindash_rev / 0.125) / 512) * delta_time
 
 func _action_rolling(delta_time : float) -> void:
 	animation = "jump"

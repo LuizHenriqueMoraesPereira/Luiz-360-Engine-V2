@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://Sprites/Player/Sonic/sonic_idle.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/player.gd" type="Script" id=2]
@@ -12,6 +12,9 @@
 [ext_resource path="res://Sounds/Sound_Jump.wav" type="AudioStream" id=10]
 [ext_resource path="res://Sounds/Sound_Spin.wav" type="AudioStream" id=11]
 [ext_resource path="res://Sounds/Sound_Skidding.wav" type="AudioStream" id=12]
+[ext_resource path="res://Sprites/Player/Sonic/sonic_spindash.png" type="Texture" id=13]
+[ext_resource path="res://Sounds/Sound_Release.wav" type="AudioStream" id=14]
+[ext_resource path="res://Sounds/Sound_Spindash.wav" type="AudioStream" id=15]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 13, 17 )
@@ -442,6 +445,60 @@ tracks/3/keys = {
 }
 
 [sub_resource type="Animation" id=10]
+resource_name = "spindash"
+length = 1.66667
+loop = true
+step = 0.166667
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 13 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -24, -34 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 6 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 0.166667, 0.333333, 0.5, 0.666667, 0.833333, 1, 1.16667, 1.33333, 1.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 0, 2, 0, 3, 0, 4, 0, 5 ]
+}
+
+[sub_resource type="Animation" id=11]
 loop = true
 step = 0.166667
 tracks/0/type = "value"
@@ -504,6 +561,8 @@ wall_shift = 4.0
 sfx_jump = ExtResource( 10 )
 sfx_skid = ExtResource( 12 )
 sfx_roll = ExtResource( 11 )
+sfx_charge = ExtResource( 15 )
+sfx_release = ExtResource( 14 )
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
@@ -527,6 +586,7 @@ anims/jump = SubResource( 6 )
 anims/lookup = SubResource( 7 )
 anims/run = SubResource( 8 )
 anims/skidding = SubResource( 9 )
-anims/walk = SubResource( 10 )
+anims/spindash = SubResource( 10 )
+anims/walk = SubResource( 11 )
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_finished"]
