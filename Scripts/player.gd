@@ -20,6 +20,7 @@ var jump_variable : bool
 var control_lock : float
 var action : int
 var spindash_rev : float
+var peelout_rev : float
 
 var allow_input : bool = true
 var allow_direction : bool = true
@@ -144,6 +145,10 @@ func _physics_process(delta):
 			allow_input = false
 			allow_direction = false
 			_action_rolling(delta_time)
+		19:
+			allow_input = false
+			allow_direction = false
+			_action_peelout(delta_time)
 	
 	if not ground:
 		y_speed += gravity_force * delta_time
@@ -306,6 +311,13 @@ func _action_lookup() -> void:
 	if not (ground and ground_speed == 0.0 and input_vertical < 0):
 		action = 0
 		return
+	
+	if Input.is_action_just_pressed("Fire 1"):
+		peelout_rev = 0.0
+		Audio._stop_sample(sfx_charge)
+		Audio._play_sample(sfx_charge)
+		action = 19
+		return
 
 func _action_crouchdown() -> void:
 	animation = "crouchdown"
@@ -317,6 +329,7 @@ func _action_crouchdown() -> void:
 		return
 	
 	if Input.is_action_just_pressed("Fire 1"):
+		spindash_rev = 0.0
 		Audio._stop_sample(sfx_charge)
 		Audio._play_sample(sfx_charge)
 		action = 5
@@ -357,12 +370,12 @@ func _action_spindash(delta_time : float) -> void:
 		spindash_rev = 0.0
 		return
 	
+	spindash_rev -= (floor(spindash_rev / 0.125) / 256.0) * delta_time
+	
 	if Input.is_action_just_pressed("Fire 1"):
 		spindash_rev += 2.0
 		Audio._stop_sample(sfx_charge)
 		Audio._play_sample(sfx_charge)
-	
-	spindash_rev -= (floor(spindash_rev / 0.125) / 512) * delta_time
 
 func _action_rolling(delta_time : float) -> void:
 	animation = "jump"
@@ -411,4 +424,21 @@ func _action_rolling(delta_time : float) -> void:
 	
 	if abs(ground_speed) < roll_friction:
 		action = 0
+		return
+
+func _action_peelout(delta_time : float) -> void:
+	animation = "dash" if peelout_rev >= 30.0 else "run"
+	animation_linked = "none"
+	animator.playback_speed = 2.0 + (peelout_rev / 8.0)
+	
+	if peelout_rev < 30.0:
+		peelout_rev += delta_time
+	
+	if not input_vertical < 0:
+		Audio._stop_sample(sfx_charge)
+		action = 0
+		if peelout_rev >= 30.0:
+			Audio._play_sample(sfx_release)
+			ground_speed = 12.0 * animation_direction
+		peelout_rev = 0.0
 		return

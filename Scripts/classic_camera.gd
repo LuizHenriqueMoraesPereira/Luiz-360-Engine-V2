@@ -74,13 +74,17 @@ func _physics_process(delta):
 			if abs(shift_y) > 0.0:
 				shift_y = max(abs(shift_y) - (2.0 * delta_time), 0.0) * sign(shift_y)
 		
-		if target.ground and abs(target.ground_speed) >= 5.0 and target.animation_direction == sign(target.ground_speed):
-			shift_x = min(abs(shift_x) + (3.0 * delta_time), shift_limit_h) * sign(target.ground_speed)
+		if target.ground:
+			if abs(target.ground_speed) >= 5.0 and (target.action != 6 and target.animation_direction == sign(target.ground_speed) or target.action == 6):
+				shift_x = min(abs(shift_x) + (3.0 * delta_time), shift_limit_h) * sign(target.ground_speed)
+			
+			if target.action == 5:
+				shift_x = min(abs(shift_x) + (2.5 * delta_time), shift_limit_h) * sign(target.animation_direction)
+			
+			if target.action == 19:
+				shift_x = min(abs(shift_x) + (2.0 * delta_time), shift_limit_h) * sign(target.animation_direction)
 		
-		if target.ground and target.action == 5:
-			shift_x = min(abs(shift_x) + (2.5 * delta_time), shift_limit_h) * sign(target.animation_direction)
-		
-		if abs(shift_x) > 0.0 and not (target.ground and abs(target.ground_speed) >= 5.0 or target.action == 5):
+		if abs(shift_x) > 0.0 and not (target.ground and abs(target.ground_speed) >= 5.0 or target.action == 5 or target.action == 19):
 			shift_x = max(abs(shift_x) - (3.0 * delta_time), 0.0) * sign(shift_x)
 		
 		ground_old = target.ground
