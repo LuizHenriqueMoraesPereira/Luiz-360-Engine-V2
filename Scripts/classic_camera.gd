@@ -36,7 +36,7 @@ func _ready():
 	max_y = scene.scene_height
 
 func _physics_process(delta):
-	var delta_time : float = float(60.0 * delta)
+	var delta_time := float(60.0 * delta)
 	
 	if not target == null:
 		if target.ground:

@@ -53,7 +53,7 @@ func _ready():
 	_start()
 
 func _physics_process(delta):
-	var delta_time : float = float(60.0 * delta)
+	var delta_time := float(60.0 * delta)
 	
 	input_horizontal = (1 if Input.is_action_pressed("Right") else 0) - (1 if Input.is_action_pressed("Left") else 0)
 	input_vertical = (1 if Input.is_action_pressed("Down") else 0) - (1 if Input.is_action_pressed("Up") else 0)
@@ -104,7 +104,25 @@ func _physics_process(delta):
 	
 	ground_speed = clamp(ground_speed, -24.0, 24.0)
 	
-	_update(delta_time, 24)
+	_update(delta_time)
+	
+	if ground:
+		if control_lock <= 0.0:
+			if abs(ground_speed) < 2.5 and ground_angle >= 35.0 and ground_angle <= 325.0:
+				control_lock = 30
+				
+				if ground_angle >= 75.0 and ground_angle <= 285.0:
+					x_speed = ground_speed * cos(deg2rad(ground_angle))
+					y_speed = ground_speed * -sin(deg2rad(ground_angle))
+					ground_angle = 0.0
+					ground = false
+				else:
+					if ground_angle < 180.0:
+						ground_speed -= deceleration
+					else:
+						ground_speed += deceleration
+		else:
+			control_lock -= delta_time
 	
 	if x_position <= $"../Camera2D".min_x + 16.0 and x_speed < 0.0:
 		x_position = $"../Camera2D".min_x + 16.0
@@ -208,24 +226,6 @@ func _physics_process(delta):
 	else:
 		sprite.global_rotation = deg2rad(360.0 - round(animation_angle))
 	hit_box.global_rotation = deg2rad(360.0 - round(ground_angle))
-	
-	if ground:
-		if control_lock <= 0.0:
-			if abs(ground_speed) < 2.5 and ground_angle >= 35.0 and ground_angle <= 325.0:
-				control_lock = 30
-				
-				if ground_angle >= 75.0 and ground_angle <= 285.0:
-					x_speed = ground_speed * cos(deg2rad(ground_angle))
-					y_speed = ground_speed * -sin(deg2rad(ground_angle))
-					ground_angle = 0.0
-					ground = false
-				else:
-					if ground_angle < 180.0:
-						ground_speed -= deceleration
-					else:
-						ground_speed += deceleration
-		else:
-			control_lock -= delta_time
 
 func _on_animation_finished(_anim_name):
 	animation_finished = true
