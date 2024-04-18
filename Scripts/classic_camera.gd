@@ -1,4 +1,4 @@
-extends Node2D
+extends Node
 
 const window_half_width : int = 160
 const window_half_height : int = 120
@@ -125,5 +125,4 @@ func _physics_process(delta):
 		if shift_result_y < 0.0:
 			shift_result_y = clamp(shift_result_y - (camera_y - target.global_position.y), shift_result_y, 0.0)
 	
-	global_position.x = clamp(round(camera_x + shift_result_x), window_half_width, scene.scene_width - window_half_width)
-	global_position.y = clamp(round(camera_y + shift_result_y), window_half_height, scene.scene_height - window_half_height)
+	scene._camera(camera_x + shift_result_x, camera_y + shift_result_y)

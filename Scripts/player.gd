@@ -124,13 +124,13 @@ func _physics_process(delta):
 		else:
 			control_lock -= delta_time
 	
-	if x_position <= $"../Camera2D".min_x + 16.0 and x_speed < 0.0:
-		x_position = $"../Camera2D".min_x + 16.0
+	if x_position <= $"../Classic Camera".min_x + 16.0 and x_speed < 0.0:
+		x_position = $"../Classic Camera".min_x + 16.0
 		if ground: ground_speed = 0.0
 		else: x_speed = 0.0
 	
-	if x_position >= $"../Camera2D".max_x - 16.0 and x_speed > 0.0:
-		x_position = $"../Camera2D".max_x - 16.0
+	if x_position >= $"../Classic Camera".max_x - 16.0 and x_speed > 0.0:
+		x_position = $"../Classic Camera".max_x - 16.0
 		if ground: ground_speed = 0.0
 		else: x_speed = 0.0
 	

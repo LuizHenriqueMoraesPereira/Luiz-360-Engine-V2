@@ -19,9 +19,7 @@ scene_height = 608
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 32, 322 )
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( 160, 120 )
-current = true
+[node name="Classic Camera" type="Node" parent="."]
 script = ExtResource( 8 )
 
 [node name="Test" parent="." instance=ExtResource( 2 )]
