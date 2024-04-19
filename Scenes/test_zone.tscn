@@ -131,7 +131,9 @@ scale = Vector2( 1, 4 )
 position = Vector2( 1280, 272 )
 scale = Vector2( 1, 4 )
 top_left = 1
+top_right = 1
 bottom_left = 1
+bottom_right = 1
 
 [node name="Layer Switcher3" parent="." instance=ExtResource( 10 )]
 position = Vector2( 1112, 208 )

@@ -23,7 +23,7 @@ func _start():
 	x_position = global_position.x
 	y_position = global_position.y
 
-func _update(delta : float):
+func _update(delta : float, loops := 2):
 	if ground:
 		x_speed = ground_speed * cos(deg2rad(ground_angle))
 		y_speed = ground_speed * -sin(deg2rad(ground_angle))
@@ -31,10 +31,9 @@ func _update(delta : float):
 	x_position += x_speed * delta
 	y_position += y_speed * delta
 	
-	var steps := 2
+	var steps := int(max(1, loops))
 	while steps > 0:
 		var wall_left := _sensor_cast(Vector2(-max(push_radius, width_radius), wall_shift if (ground and fmod(round(ground_angle / 4.0), 90.0) == 0.0) else 0.0), Vector2.LEFT)
-		
 		if wall_left.collision:
 			x_position += wall_left.destination.x
 			y_position += wall_left.destination.y
@@ -42,7 +41,6 @@ func _update(delta : float):
 			else: x_speed = 0.0
 		
 		var wall_right := _sensor_cast(Vector2(max(push_radius, width_radius), wall_shift if (ground and fmod(round(ground_angle / 4.0), 90.0) == 0.0) else 0.0), Vector2.RIGHT)
-		
 		if wall_right.collision:
 			x_position += wall_right.destination.x
 			y_position += wall_right.destination.y
@@ -87,7 +85,6 @@ func _update(delta : float):
 		
 		if not ground and y_speed >= 0.0 and floor_sensor.collision:
 			y_position += floor_sensor.destination.y
-			
 			ground_angle = fmod(720.0 - rad2deg(atan2(floor_sensor.normal.x, -floor_sensor.normal.y)), 360.0)
 			ground_speed = x_speed
 			if abs(x_speed) <= abs(y_speed):
@@ -119,7 +116,7 @@ func _update(delta : float):
 	global_position = Vector2(round(x_position), round(y_position))
 	global_rotation = deg2rad(360.0 - round(ground_angle))
 
-func _compare_tag(tag : String):
+func _compare_tag(tag : String) -> bool:
 	var result := false
 	for t in tags:
 		if t == tag:
@@ -142,8 +139,8 @@ func _sensor_cast(anchor : Vector2, direction : Vector2) -> Dictionary:
 	anchor.x += x_position
 	anchor.y += y_position
 	
-	var results := Array()
-	var exclude := Array()
+	var results := []
+	var exclude := []
 	var temp := space.intersect_ray(from, to, exclude, 15)
 	
 	while not temp.empty():
@@ -157,4 +154,4 @@ func _sensor_cast(anchor : Vector2, direction : Vector2) -> Dictionary:
 				var distance = from.distance_to(result.position) - from.distance_to(anchor)
 				return { "collision": distance <= 0.0, "distance": distance, "destination": result.position - anchor, "point": result.position, "normal": result.normal }
 	
-	return { "collision": false, "distance": 32.0, "destination": Vector2.ZERO, "point": Vector2.ZERO, "normal": Vector2.ZERO }
+	return { "collision": false, "distance": 32.0, "destination": Vector2.ZERO, "point": Vector2.ZERO, "normal": Vector2.UP }

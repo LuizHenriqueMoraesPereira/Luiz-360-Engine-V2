@@ -1,7 +1,7 @@
 extends Node
 
-const window_half_width : int = 160
-const window_half_height : int = 120
+const window_half_width := 160
+const window_half_height := 120
 
 export(int) var scene_width = 320
 export(int) var scene_height = 240
